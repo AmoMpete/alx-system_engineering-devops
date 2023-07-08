@@ -1,0 +1,2 @@
+#!/bin/bashj
+chmo -R +X .
