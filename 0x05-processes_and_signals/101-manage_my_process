@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# Creates a file containing its PID /var/run/my_process.pid
+# Deletes the file /var/run/my_process.pid
+# Displays manage_my_process restarted
+# Displays Usage: manage_my_process {start|stop|restart} if any other argument or no argument is passed
+
+PROCESS_NAME="manage_my_process"
+PID_FILE="/var/run/my_process.pid"
+PROCESS_SCRIPT="/tmp/my_process"
+
+case "$1" in
+    start)
+        $PROCESS_SCRIPT &
+        echo $! > $PID_FILE
+        echo "${PROCESS_NAME} started"
+        ;;
+    stop)
+        if [ -f $PID_FILE ]; then
+            PID=$(cat $PID_FILE)
+            kill "$PID"
+            rm -f $PID_FILE
+            echo "${PROCESS_NAME} stopped"
+        else
+            echo "No PID file found. Is the process running?"
+        fi
+        ;;
+    restart)
+        if [ -f $PID_FILE ]; then
+            PID=$(cat $PID_FILE)
+            kill "$PID"
+            rm -f $PID_FILE
+        fi
+        $PROCESS_SCRIPT &
+        echo $! > $PID_FILE
+        echo "${PROCESS_NAME} restarted"
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        ;;
+esac
